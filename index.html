@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bobun Arkeoloji Macerasi Error #24501</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f0f0;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 380px;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.08);
+            border-right: 1px solid #e0e0e0;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px 20px;
+            border-bottom: 3px solid #5568d3;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .level-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.2);
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .level-number {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .level-size {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .blocks-section {
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #495057;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .blocks-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .code-block {
+            background: #4C97FF;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 6px;
+            cursor: move;
+            font-weight: 600;
+            font-size: 13px;
+            text-align: center;
+            transition: all 0.15s;
+            user-select: none;
+            box-shadow: 0 2px 4px rgba(76, 151, 255, 0.3);
+        }
+
+        .code-block:hover {
+            background: #3d7fd6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(76, 151, 255, 0.4);
+        }
+
+        .code-block:active {
+            transform: translateY(0);
+        }
+
+        .workspace-section {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .workspace {
+            background: white;
+            border: 2px dashed #cbd5e0;
+            border-radius: 8px;
+            padding: 15px;
+            min-height: 200px;
+        }
+
+        .workspace-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #718096;
+            margin-bottom: 12px;
+        }
+
+        .code-sequence {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .sequence-item {
+            background: #4C97FF;
+            color: white;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .sequence-item:hover {
+            background: #e53e3e;
+            transform: translateX(5px);
+        }
+
+        .sequence-item::after {
+            content: '×';
+            font-size: 18px;
+            opacity: 0;
+            transition: opacity 0.15s;
+        }
+
+        .sequence-item:hover::after {
+            opacity: 1;
+        }
+
+        .controls {
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-run {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+        }
+
+        .btn-run:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(72, 187, 120, 0.4);
+        }
+
+        .btn-run:active {
+            transform: translateY(0);
+        }
+
+        .btn-clear {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-clear:hover {
+            background: #cbd5e0;
+        }
+
+        .main-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .game-canvas {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+
+        .grid {
+            display: grid;
+            gap: 3px;
+            background: #e2e8f0;
+            padding: 3px;
+            border-radius: 8px;
+        }
+
+        .grid-cell {
+            background: white;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            border-radius: 4px;
+        }
+
+        .grid-cell.highlight {
+            background: #fef3c7;
+            animation: pulse 0.4s ease;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .character {
+            width: 75%;
+            height: 75%;
+            position: relative;
+            z-index: 10;
+        }
+
+        .character-body {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .character-head {
+            width: 100%;
+            height: 60%;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            border-radius: 50% 50% 45% 45%;
+            position: absolute;
+            top: 0;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            border: 3px solid #d97706;
+        }
+
+        .character-hat {
+            width: 85%;
+            height: 38%;
+            background: linear-gradient(135deg, #92400e 0%, #78350f 100%);
+            border-radius: 50% 50% 0 0;
+            position: absolute;
+            top: -18%;
+            left: 7.5%;
+            border: 2px solid #451a03;
+        }
+
+        .character-hat::after {
+            content: '';
+            position: absolute;
+            width: 115%;
+            height: 28%;
+            background: linear-gradient(135deg, #92400e 0%, #78350f 100%);
+            border-radius: 50%;
+            bottom: -12%;
+            left: -7.5%;
+            border: 2px solid #451a03;
+        }
+
+        .character-eyes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .character-eye {
+            position: absolute;
+            width: 20%;
+            height: 24%;
+            background: white;
+            border-radius: 50%;
+            top: 38%;
+            border: 2px solid #78350f;
+            overflow: hidden;
+        }
+
+        .character-eye.left {
+            left: 22%;
+        }
+
+        .character-eye.right {
+            right: 22%;
+        }
+
+        .character-pupil {
+            position: absolute;
+            width: 55%;
+            height: 55%;
+            background: #1f2937;
+            border-radius: 50%;
+            top: 22%;
+            left: 22%;
+            transition: transform 0.1s ease;
+        }
+
+        .character-mouth {
+            position: absolute;
+            width: 32%;
+            height: 16%;
+            border: 3px solid #78350f;
+            border-radius: 0 0 50% 50%;
+            border-top: none;
+            top: 62%;
+            left: 34%;
+        }
+
+        .character-body-torso {
+            width: 82%;
+            height: 48%;
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            border-radius: 22% 22% 32% 32%;
+            position: absolute;
+            bottom: 0;
+            left: 9%;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+            border: 2px solid #1e40af;
+        }
+
+        .character-arm {
+            position: absolute;
+            width: 22%;
+            height: 38%;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            border-radius: 42%;
+            top: 56%;
+            border: 2px solid #d97706;
+        }
+
+        .character-arm.left {
+            left: 3%;
+            transform: rotate(-22deg);
+        }
+
+        .character-arm.right {
+            right: 3%;
+            transform: rotate(22deg);
+        }
+
+        .brush {
+            position: absolute;
+            width: 40%;
+            height: 70%;
+            right: -15%;
+            top: 75%;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 15;
+        }
+
+        .brush-handle {
+            position: absolute;
+            width: 25%;
+            height: 85%;
+            background: linear-gradient(135deg, #92400e 0%, #78350f 100%);
+            border-radius: 20% 20% 40% 40%;
+            left: 37.5%;
+            top: 0;
+            border: 1px solid #451a03;
+        }
+
+        .brush-bristles {
+            position: absolute;
+            width: 100%;
+            height: 35%;
+            background: linear-gradient(180deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 50% 50% 45% 45%;
+            bottom: 0;
+            left: 0;
+            border: 1px solid #f59e0b;
+        }
+
+        .brush-bristles::after {
+            content: '';
+            position: absolute;
+            width: 90%;
+            height: 60%;
+            background: repeating-linear-gradient(
+                90deg,
+                #fef3c7 0px,
+                #fef3c7 2px,
+                transparent 2px,
+                transparent 5px
+            );
+            bottom: -5%;
+            left: 5%;
+        }
+
+        .character.brushing .brush {
+            opacity: 1;
+            animation: brushing 0.8s ease-in-out infinite;
+        }
+
+        @keyframes brushing {
+            0%, 100% { 
+                transform: rotate(-25deg) translateX(0);
+            }
+            25% { 
+                transform: rotate(-35deg) translateX(-8px) translateY(-3px);
+            }
+            75% { 
+                transform: rotate(-15deg) translateX(8px) translateY(3px);
+            }
+        }
+
+        .fossil.being-cleaned {
+            animation: fossilClean 0.8s ease-in-out infinite;
+        }
+
+        @keyframes fossilClean {
+            0%, 100% { 
+                filter: drop-shadow(0 2px 8px rgba(0,0,0,0.15));
+            }
+            50% { 
+                filter: drop-shadow(0 2px 8px rgba(251, 191, 36, 0.5)) brightness(1.1);
+            }
+        }
+
+        .fossil {
+            width: 85%;
+            height: 85%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fossil img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.15));
+            animation: fossilFloat 2.5s ease-in-out infinite;
+        }
+
+        @keyframes fossilFloat {
+            0%, 100% { 
+                transform: translateY(0) scale(1);
+            }
+            50% { 
+                transform: translateY(-5px) scale(1.03);
+            }
+        }
+
+        .collecting {
+            animation: collectFossil 0.8s ease-out forwards !important;
+        }
+
+        @keyframes collectFossil {
+            0% { 
+                transform: translateY(0) scale(1) rotate(0deg);
+                opacity: 1;
+            }
+            100% { 
+                transform: translateY(-30px) scale(0.3) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .celebrating {
+            animation: celebrate 0.5s ease-in-out 3 !important;
+        }
+
+        @keyframes celebrate {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.15) rotate(-8deg); }
+            75% { transform: scale(1.15) rotate(8deg); }
+        }
+
+        .obstacle {
+            width: 92%;
+            height: 92%;
+            background: linear-gradient(135deg, #475569 0%, #334155 100%);
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            border: 2px solid #1e293b;
+        }
+
+        .message-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.75);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .message-box {
+            background: white;
+            padding: 50px 60px;
+            border-radius: 16px;
+            text-align: center;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
+            from { 
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to { 
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .message-title {
+            font-size: 42px;
+            font-weight: 900;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .success-title {
+            color: #10b981;
+        }
+
+        .fail-title {
+            color: #ef4444;
+        }
+
+        .message-text {
+            font-size: 18px;
+            color: #4b5563;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .message-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .message-btn {
+            padding: 14px 32px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-retry {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-next {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .message-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+
+        .message-btn:active {
+            transform: translateY(0);
+        }
+
+        .particle {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 999;
+            animation: particleFloat 1.2s ease-out forwards;
+        }
+
+        @keyframes particleFloat {
+            to {
+                transform: translate(var(--tx), var(--ty)) scale(0);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="header">
+                <h1>Bob'un Arkeoloji Macerasi</h1>
+                <div class="level-info">
+                    <div class="level-number" id="levelNumber">Bolum 1/32</div>
+                    <div class="level-size" id="levelSize">2x2 Harita</div>
+                </div>
+            </div>
+
+            <div class="blocks-section">
+                <div class="section-title">Hareket Bloklari</div>
+                <div class="blocks-container">
+                    <div class="code-block" draggable="true" data-command="up">Yukari</div>
+                    <div class="code-block" draggable="true" data-command="down">Asagi</div>
+                    <div class="code-block" draggable="true" data-command="left">Sola</div>
+                    <div class="code-block" draggable="true" data-command="right">Saga</div>
+                </div>
+            </div>
+
+            <div class="workspace-section">
+                <div class="workspace-title">Kodlarin</div>
+                <div class="workspace">
+                    <div class="code-sequence" id="codeSequence"></div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-run" onclick="runCode()">Calistir</button>
+                <button class="btn btn-clear" onclick="clearCode()">Temizle</button>
+            </div>
+        </div>
+
+        <div class="main-area">
+            <div class="game-canvas">
+                <div class="grid" id="grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="message-overlay" id="messageOverlay">
+        <div class="message-box">
+            <div class="message-title" id="messageTitle"></div>
+            <div class="message-text" id="messageText"></div>
+            <div class="message-buttons">
+                <button class="message-btn btn-retry" onclick="hideMessage()">Tekrar Dene</button>
+                <button class="message-btn btn-next" id="nextButton" onclick="nextLevel()" style="display:none;">Sonraki</button>
+            </div>
+        </div>
+    </div>
+    
+
+    <script>
+        const CELL_SIZE = 70;
+        
+        const levels = [
+            { size: 2, start: {x: 0, y: 0}, fossil: {x: 1, y: 0, type: 1}, obstacles: [] },
+            { size: 2, start: {x: 0, y: 0}, fossil: {x: 0, y: 1, type: 2}, obstacles: [] },
+            { size: 2, start: {x: 0, y: 0}, fossil: {x: 1, y: 1, type: 1}, obstacles: [] },
+            { size: 3, start: {x: 0, y: 0}, fossil: {x: 2, y: 0, type: 2}, obstacles: [] },
+            { size: 3, start: {x: 0, y: 0}, fossil: {x: 0, y: 2, type: 1}, obstacles: [] },
+            { size: 3, start: {x: 0, y: 0}, fossil: {x: 2, y: 2, type: 2}, obstacles: [] },
+            { size: 3, start: {x: 0, y: 0}, fossil: {x: 2, y: 0, type: 1}, obstacles: [{x: 1, y: 0}] },
+            { size: 3, start: {x: 0, y: 0}, fossil: {x: 0, y: 2, type: 2}, obstacles: [{x: 0, y: 1}] },
+            { size: 3, start: {x: 0, y: 0}, fossil: {x: 2, y: 2, type: 1}, obstacles: [{x: 1, y: 1}] },
+            { size: 4, start: {x: 0, y: 0}, fossil: {x: 3, y: 0, type: 2}, obstacles: [] },
+            { size: 4, start: {x: 0, y: 0}, fossil: {x: 0, y: 3, type: 1}, obstacles: [] },
+            { size: 4, start: {x: 0, y: 0}, fossil: {x: 3, y: 3, type: 2}, obstacles: [] },
+            { size: 4, start: {x: 0, y: 0}, fossil: {x: 3, y: 0, type: 1}, obstacles: [{x: 1, y: 0}, {x: 2, y: 0}] },
+            { size: 4, start: {x: 0, y: 0}, fossil: {x: 3, y: 3, type: 2}, obstacles: [{x: 1, y: 1}, {x: 2, y: 2}] },
+            { size: 5, start: {x: 0, y: 0}, fossil: {x: 4, y: 0, type: 1}, obstacles: [] },
+            { size: 5, start: {x: 0, y: 0}, fossil: {x: 4, y: 4, type: 2}, obstacles: [] },
+            { size: 5, start: {x: 0, y: 0}, fossil: {x: 4, y: 4, type: 1}, obstacles: [{x: 2, y: 2}] },
+            { size: 5, start: {x: 2, y: 2}, fossil: {x: 0, y: 0, type: 2}, obstacles: [{x: 1, y: 1}] },
+            { size: 6, start: {x: 0, y: 0}, fossil: {x: 5, y: 0, type: 1}, obstacles: [{x: 2, y: 0}, {x: 3, y: 0}] },
+            { size: 6, start: {x: 0, y: 3}, fossil: {x: 5, y: 3, type: 2}, obstacles: [{x: 2, y: 2}, {x: 2, y: 3}, {x: 2, y: 4}] },
+            { size: 6, start: {x: 0, y: 0}, fossil: {x: 5, y: 5, type: 1}, obstacles: [{x: 2, y: 2}, {x: 3, y: 3}] },
+            { size: 7, start: {x: 0, y: 0}, fossil: {x: 6, y: 6, type: 2}, obstacles: [{x: 3, y: 3}] },
+            { size: 7, start: {x: 3, y: 0}, fossil: {x: 3, y: 6, type: 1}, obstacles: [{x: 3, y: 2}, {x: 3, y: 3}, {x: 3, y: 4}] },
+            { size: 7, start: {x: 0, y: 0}, fossil: {x: 6, y: 6, type: 2}, obstacles: [{x: 2, y: 2}, {x: 4, y: 4}] },
+            { size: 8, start: {x: 0, y: 0}, fossil: {x: 7, y: 7, type: 1}, obstacles: [{x: 3, y: 3}, {x: 4, y: 3}, {x: 3, y: 4}, {x: 4, y: 4}] },
+            { size: 8, start: {x: 7, y: 7}, fossil: {x: 0, y: 0, type: 2}, obstacles: [{x: 3, y: 0}, {x: 4, y: 0}, {x: 0, y: 3}, {x: 0, y: 4}] },
+            { size: 8, start: {x: 0, y: 0}, fossil: {x: 7, y: 7, type: 1}, obstacles: [{x: 2, y: 2}, {x: 5, y: 5}, {x: 3, y: 4}, {x: 4, y: 3}] },
+            { size: 9, start: {x: 0, y: 4}, fossil: {x: 8, y: 4, type: 2}, obstacles: [{x: 3, y: 3}, {x: 3, y: 4}, {x: 3, y: 5}, {x: 6, y: 3}, {x: 6, y: 4}, {x: 6, y: 5}] },
+            { size: 9, start: {x: 4, y: 0}, fossil: {x: 4, y: 8, type: 1}, obstacles: [{x: 4, y: 3}, {x: 4, y: 4}, {x: 4, y: 5}] },
+            { size: 9, start: {x: 0, y: 0}, fossil: {x: 8, y: 8, type: 2}, obstacles: [{x: 2, y: 2}, {x: 4, y: 4}, {x: 6, y: 6}] },
+            { size: 10, start: {x: 0, y: 0}, fossil: {x: 9, y: 9, type: 1}, obstacles: [{x: 4, y: 4}, {x: 5, y: 4}, {x: 4, y: 5}, {x: 5, y: 5}] },
+            { size: 10, start: {x: 9, y: 9}, fossil: {x: 0, y: 0, type: 2}, obstacles: [{x: 5, y: 9}, {x: 9, y: 5}, {x: 0, y: 4}, {x: 4, y: 0}] },
+            { size: 10, start: {x: 0, y: 0}, fossil: {x: 9, y: 9, type: 1}, obstacles: [{x: 3, y: 3}, {x: 4, y: 4}, {x: 5, y: 5}, {x: 6, y: 6}] }
+        ];
+
+        let currentLevel = 0;
+        let codeSequence = [];
+        let characterPos = {x: 0, y: 0};
+        let isRunning = false;
+        let gridCells = [];
+
+
+
+        function init() {
+            setupDragAndDrop();
+            loadLevel(0);
+            setupEyeTracking();
+        }
+
+        function setupEyeTracking() {
+            document.addEventListener('mousemove', (e) => {
+                const char = document.getElementById('character');
+                if (!char) return;
+
+                const pupils = char.querySelectorAll('.character-pupil');
+                pupils.forEach(pupil => {
+                    const eye = pupil.parentElement;
+                    const eyeRect = eye.getBoundingClientRect();
+                    const eyeCenterX = eyeRect.left + eyeRect.width / 2;
+                    const eyeCenterY = eyeRect.top + eyeRect.height / 2;
+
+                    const angle = Math.atan2(e.clientY - eyeCenterY, e.clientX - eyeCenterX);
+                    const distance = Math.min(eyeRect.width * 0.15, eyeRect.height * 0.15);
+
+                    const pupilX = Math.cos(angle) * distance;
+                    const pupilY = Math.sin(angle) * distance;
+
+                    pupil.style.transform = `translate(${pupilX}px, ${pupilY}px)`;
+                });
+            });
+        }
+
+        function setupDragAndDrop() {
+            const blocks = document.querySelectorAll('.code-block');
+            blocks.forEach(block => {
+                block.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('command', block.dataset.command);
+                    e.dataTransfer.setData('text', block.textContent);
+                });
+
+                block.addEventListener('click', () => {
+                    addToSequence(block.dataset.command, block.textContent);
+                });
+            });
+
+            const workspace = document.querySelector('.workspace');
+            workspace.addEventListener('dragover', (e) => e.preventDefault());
+            workspace.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const command = e.dataTransfer.getData('command');
+                const text = e.dataTransfer.getData('text');
+                addToSequence(command, text);
+            });
+        }
+
+        function addToSequence(command, text) {
+            if (isRunning) return;
+            codeSequence.push({command, text});
+            updateSequenceDisplay();
+        }
+
+        function updateSequenceDisplay() {
+            const container = document.getElementById('codeSequence');
+            container.innerHTML = '';
+            codeSequence.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'sequence-item';
+                div.textContent = item.text;
+                div.onclick = () => {
+                    if (!isRunning) {
+                        codeSequence.splice(index, 1);
+                        updateSequenceDisplay();
+                    }
+                };
+                container.appendChild(div);
+            });
+        }
+
+        function clearCode() {
+            if (!isRunning) {
+                codeSequence = [];
+                updateSequenceDisplay();
+            }
+        }
+
+        function loadLevel(index) {
+            currentLevel = index;
+            const level = levels[index];
+            
+            document.getElementById('levelNumber').textContent = `Bolum ${index + 1}/32`;
+            document.getElementById('levelSize').textContent = `${level.size}x${level.size} Harita`;
+
+            characterPos = {...level.start};
+            createGrid(level);
+            
+            codeSequence = [];
+            updateSequenceDisplay();
+        }
+
+        function createGrid(level) {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            grid.style.gridTemplateColumns = `repeat(${level.size}, ${CELL_SIZE}px)`;
+            grid.style.gridTemplateRows = `repeat(${level.size}, ${CELL_SIZE}px)`;
+            
+            gridCells = [];
+            
+            for (let y = level.size - 1; y >= 0; y--) {
+                for (let x = 0; x < level.size; x++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'grid-cell';
+                    cell.style.width = CELL_SIZE + 'px';
+                    cell.style.height = CELL_SIZE + 'px';
+                    
+                    const isObstacle = level.obstacles.some(obs => obs.x === x && obs.y === y);
+                    const isStart = level.start.x === x && level.start.y === y;
+                    const isFossil = level.fossil.x === x && level.fossil.y === y;
+                    
+                    if (isObstacle) {
+                        const obstacle = document.createElement('div');
+                        obstacle.className = 'obstacle';
+                        cell.appendChild(obstacle);
+                    }
+                    
+                    if (isStart) {
+                        const char = document.createElement('div');
+                        char.className = 'character';
+                        char.id = 'character';
+                        char.innerHTML = `
+                            <div class="character-body">
+                                <div class="character-hat"></div>
+                                <div class="character-head">
+                                    <div class="character-eyes">
+                                        <div class="character-eye left">
+                                            <div class="character-pupil"></div>
+                                        </div>
+                                        <div class="character-eye right">
+                                            <div class="character-pupil"></div>
+                                        </div>
+                                    </div>
+                                    <div class="character-mouth"></div>
+                                </div>
+                                <div class="character-body-torso"></div>
+                                <div class="character-arm left"></div>
+                                <div class="character-arm right"></div>
+                                <div class="brush">
+                                    <div class="brush-handle"></div>
+                                    <div class="brush-bristles"></div>
+                                </div>
+                            </div>
+                        `;
+                        cell.appendChild(char);
+                    }
+                    
+                    if (isFossil) {
+                        const fossil = document.createElement('div');
+                        fossil.className = 'fossil';
+                        
+                        const img = document.createElement('img');
+                        img.src = level.fossil.type === 1 ? 'fosil.png' : 'fosil2.png';
+                        img.alt = 'Fosil';
+                        
+                        fossil.appendChild(img);
+                        cell.appendChild(fossil);
+                    }
+                    
+                    grid.appendChild(cell);
+                    
+                    if (!gridCells[y]) gridCells[y] = [];
+                    gridCells[y][x] = cell;
+                }
+            }
+        }
+
+        async function runCode() {
+            if (isRunning || codeSequence.length === 0) return;
+            isRunning = true;
+
+            const level = levels[currentLevel];
+            characterPos = {...level.start};
+
+            for (let block of codeSequence) {
+                await sleep(350);
+
+                const oldX = characterPos.x;
+                const oldY = characterPos.y;
+                let newX = oldX;
+                let newY = oldY;
+
+                if (block.command === 'up') {
+                    newY = oldY + 1;
+                } else if (block.command === 'down') {
+                    newY = oldY - 1;
+                } else if (block.command === 'left') {
+                    newX = oldX - 1;
+                } else if (block.command === 'right') {
+                    newX = oldX + 1;
+                }
+
+                if (newX < 0 || newX >= level.size || newY < 0 || newY >= level.size) {
+                    showMessage(false, 'Bob harita disina cikti! Yeniden dene.');
+                    isRunning = false;
+                    return;
+                }
+
+                const isObstacle = level.obstacles.some(obs => obs.x === newX && obs.y === newY);
+                if (isObstacle) {
+                    showMessage(false, 'Bob engele carpti! Baska bir yol dene.');
+                    isRunning = false;
+                    return;
+                }
+
+                const char = document.getElementById('character');
+                const oldCell = gridCells[oldY][oldX];
+                const newCell = gridCells[newY][newX];
+                
+                if (char && char.parentNode === oldCell) {
+                    oldCell.removeChild(char);
+                }
+                newCell.appendChild(char);
+                newCell.classList.add('highlight');
+                setTimeout(() => newCell.classList.remove('highlight'), 400);
+
+                characterPos.x = newX;
+                characterPos.y = newY;
+            }
+
+            await sleep(400);
+
+            if (characterPos.x === level.fossil.x && characterPos.y === level.fossil.y) {
+                const fossilCell = gridCells[level.fossil.y][level.fossil.x];
+                const fossil = fossilCell.querySelector('.fossil');
+                const char = document.getElementById('character');
+                
+                if (char) char.classList.add('brushing');
+                if (fossil) fossil.classList.add('being-cleaned');
+                
+                await sleep(2400);
+                
+                if (char) char.classList.remove('brushing');
+                if (fossil) {
+                    fossil.classList.remove('being-cleaned');
+                    fossil.classList.add('collecting');
+                }
+                if (char) char.classList.add('celebrating');
+                
+                const rect = fossilCell.getBoundingClientRect();
+                createParticles(rect.left + rect.width/2, rect.top + rect.height/2);
+                
+                await sleep(1000);
+                showMessage(true, 'Harika! Bob fosili buldu ve kazdı!');
+            } else {
+                showMessage(false, 'Bob fosile ulasamadi. Tekrar dene!');
+            }
+
+            isRunning = false;
+        }
+
+        function createParticles(x, y) {
+            const colors = ['#fbbf24', '#f59e0b', '#fb923c', '#f97316', '#ef4444'];
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = x + 'px';
+                particle.style.top = y + 'px';
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                const angle = (Math.PI * 2 * i) / 30;
+                const distance = 60 + Math.random() * 50;
+                const tx = Math.cos(angle) * distance;
+                const ty = Math.sin(angle) * distance;
+                
+                particle.style.setProperty('--tx', tx + 'px');
+                particle.style.setProperty('--ty', ty + 'px');
+                particle.style.animationDelay = (i * 0.02) + 's';
+                
+                document.body.appendChild(particle);
+                setTimeout(() => particle.remove(), 1200);
+            }
+        }
+
+        function showMessage(success, text) {
+            const overlay = document.getElementById('messageOverlay');
+            const title = document.getElementById('messageTitle');
+            const messageText = document.getElementById('messageText');
+            const nextButton = document.getElementById('nextButton');
+
+            title.textContent = success ? 'BASARILI!' : 'TEKRAR DENE';
+            title.className = success ? 'message-title success-title' : 'message-title fail-title';
+            messageText.textContent = text;
+            
+            if (success && currentLevel < levels.length - 1) {
+                nextButton.style.display = 'inline-block';
+                nextButton.textContent = 'Sonraki';
+            } else if (success && currentLevel === levels.length - 1) {
+                nextButton.textContent = 'Bitti!';
+                nextButton.style.display = 'inline-block';
+            } else {
+                nextButton.style.display = 'none';
+            }
+
+            overlay.style.display = 'flex';
+        }
+
+        function hideMessage() {
+            document.getElementById('messageOverlay').style.display = 'none';
+            loadLevel(currentLevel);
+        }
+
+        function nextLevel() {
+            document.getElementById('messageOverlay').style.display = 'none';
+            
+            if (currentLevel < levels.length - 1) {
+                loadLevel(currentLevel + 1);
+            } else {
+                alert('Tebrikler! Tum bolumleri tamamladin!');
+                loadLevel(0);
+            }
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        init();
+    </script>
+     
+</body>
+</html>
